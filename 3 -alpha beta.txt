@@ -1,0 +1,61 @@
+# Alpha-Beta Pruning in Python (Easy Version for Practical Exam)
+
+# Recursive Alpha-Beta function
+def alphaBeta(depth, nodeIndex, isMaximizing, scores, alpha, beta, maxDepth):
+    
+    # Base case: reached leaf node
+    if depth == maxDepth:
+        return scores[nodeIndex]
+
+    # Maximizer's turn
+    if isMaximizing:
+        best = float('-inf')   # Start with lowest value
+
+        # Explore 2 children: nodeIndex*2 and nodeIndex*2+1
+        for i in range(2):
+            value = alphaBeta(depth + 1,
+                              nodeIndex * 2 + i,
+                              False,              # Next is Minimizer
+                              scores, alpha, beta, maxDepth)
+
+            best = max(best, value)  # Maximizer picks max value
+            alpha = max(alpha, best) # Update alpha (best for Maximizer)
+
+            # Prune if possible
+            if beta <= alpha:
+                break
+
+        return best
+
+    # Minimizer's turn
+    else:
+        best = float('inf')   # Start with highest value
+
+        for i in range(2):
+            value = alphaBeta(depth + 1,
+                              nodeIndex * 2 + i,
+                              True,               # Next is Maximizer
+                              scores, alpha, beta, maxDepth)
+
+            best = min(best, value)  # Minimizer picks min value
+            beta = min(beta, best)   # Update beta (best for Minimizer)
+
+            # Prune if possible
+            if beta <= alpha:
+                break
+
+        return best
+
+
+# ------------------ MAIN PROGRAM --------------------
+
+# Leaf node values (scores at bottom of game tree)
+scores = [3, 5, 6, 9, 1, 2, 0, -1]
+
+maxDepth = 3  # Depth of the tree
+
+# Call Alpha-Beta function
+result = alphaBeta(0, 0, True, scores,
+                   float('-inf'), float('inf'), maxDepth)
+
+print("The optimal value is:", result)

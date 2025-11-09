@@ -1,0 +1,48 @@
+# N-Queens Problem using Backtracking (Easy Practical Exam Version)
+
+# Function to print the chessboard
+def printBoard(board, N):
+    for r in range(N):
+        for c in range(N):
+            # Print Q if queen is placed in this column, else .
+            print("Q " if board[r] == c else ". ", end="")
+        print()
+    print()
+
+# Function to check if placing a queen at (row, col) is SAFE
+def isSafe(board, row, col):
+    # Check all previous rows
+    for i in range(row):
+        # Condition 1: Same column
+        if board[i] == col:
+            return False
+        
+        # Condition 2: Same diagonal
+        # If difference in rows == difference in columns → diagonal attack
+        if abs(board[i] - col) == abs(i - row):
+            return False
+    
+    return True   # Safe to place queen
+
+# Backtracking Function to solve N-Queens
+def solveNQueens(row, board, N):
+    # Base case: If all queens are placed
+    if row == N:
+        printBoard(board, N)  # Print final solution
+        return
+    
+    # Try placing queen in each column of current row
+    for col in range(N):
+        if isSafe(board, row, col):   # Check if safe
+            board[row] = col          # Place the queen
+            solveNQueens(row + 1, board, N)  # Recurse for next row
+            # No need to remove queen (backtracking happens automatically
+            # when we overwrite board[row] in next iteration)
+
+# Main Program
+N = int(input("Enter number of queens: "))
+board = [-1] * N    # board[i] = column index of queen in row i
+
+print(f"\nSolutions for {N}-Queens problem:\n")
+solveNQueens(0, board, N)
+

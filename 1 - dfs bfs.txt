@@ -1,0 +1,57 @@
+# DFS and BFS implementation in Python (Easy Practical Version)
+
+from collections import deque
+
+# -------------------- DFS Function (Recursive) --------------------
+def DFS(node, adj, visited):
+    visited[node] = True        # Mark current node as visited
+    print(node, end=" ")        # Print the node
+
+    # Visit all neighbors
+    for i in range(len(adj[node])):   # Index-based loop (same as C++)
+        neighbor = adj[node][i]
+        if not visited[neighbor]:
+            DFS(neighbor, adj, visited)
+
+
+# -------------------- BFS Function (Iterative) --------------------
+def BFS(start, adj, vertices):
+    visited = [False] * vertices     # Track visited nodes
+    q = deque()                      # Queue for BFS
+
+    visited[start] = True
+    q.append(start)
+
+    while q:                         # While queue is not empty
+        node = q.popleft()           # Remove front element
+        print(node, end=" ")
+
+        # Visit all neighbors
+        for i in range(len(adj[node])):
+            neighbor = adj[node][i]
+            if not visited[neighbor]:
+                visited[neighbor] = True
+                q.append(neighbor)
+
+
+# -------------------- Main Program --------------------
+vertices = int(input("Enter number of vertices: "))
+edges = int(input("Enter number of edges: "))
+
+# Create adjacency list
+adj = [[] for _ in range(vertices)]
+
+print("Enter edges (u v):")
+for _ in range(edges):
+    u, v = map(int, input().split())
+    adj[u].append(v)
+    adj[v].append(u)          # Undirected graph
+
+# -------------------- DFS Traversal --------------------
+print("\nDFS traversal starting from node 0:")
+visited = [False] * vertices
+DFS(0, adj, visited)
+
+# -------------------- BFS Traversal --------------------
+print("\nBFS traversal starting from node 0:")
+BFS(0, adj, vertices)

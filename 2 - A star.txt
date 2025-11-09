@@ -1,0 +1,55 @@
+# A* Search Algorithm in Python (Simple & Practical-Friendly)
+
+import heapq   # heapq provides a min-heap priority queue
+
+# ------------------ A* Search Function ------------------
+def a_star(graph, heuristics, start, goal):
+    # Priority queue stores tuples: (f, node, g)
+    pq = []
+    heapq.heappush(pq, (heuristics[start], start, 0))  # f = g + h = 0 + h(start)
+
+    visited = set()  # To avoid revisiting nodes
+
+    while pq:
+        # Pop the node having the smallest f value
+        f, current, g = heapq.heappop(pq)
+
+        # Skip if already processed
+        if current in visited:
+            continue
+        
+        visited.add(current)
+        print(f"Visiting: {current}, f={f}, g={g}")
+
+        # Goal check
+        if current == goal:
+            print(f"Goal '{goal}' reached with total cost {g}")
+            return
+
+        # Explore neighbors
+        for neighbor, cost in graph[current]:
+            if neighbor not in visited:
+                g_new = g + cost                      # New actual cost
+                f_new = g_new + heuristics[neighbor]  # A* formula: f = g + h
+                heapq.heappush(pq, (f_new, neighbor, g_new))
+
+
+# ------------------ Example Graph ------------------
+graph = {
+    'A': [('B', 1), ('C', 4)],
+    'B': [('C', 2), ('D', 3)],
+    'C': [('D', 5)],
+    'D': []
+}
+
+# Heuristic values (estimated distance to goal)
+heuristics = {
+    'A': 7,
+    'B': 6,
+    'C': 2,
+    'D': 0
+}
+
+# ------------------ Run A* Search ------------------
+print("A* Search Path:")
+a_star(graph, heuristics, 'A', 'D')

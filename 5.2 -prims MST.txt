@@ -1,0 +1,32 @@
+# Prim's Algorithm - Greedy method to find Minimum Spanning Tree (MST)
+import sys
+
+def prims(graph, n):
+    selected = [False] * n  # Track visited vertices
+    selected[0] = True      # Start from vertex 0
+    edges = 0
+
+    print("\nEdge : Weight")
+    while edges < n - 1:
+        minimum = sys.maxsize
+        x = y = 0
+        for i in range(n):
+            if selected[i]:
+                for j in range(n):
+                    # Select smallest edge connecting visited and unvisited vertices
+                    if (not selected[j]) and graph[i][j]:
+                        if minimum > graph[i][j]:
+                            minimum = graph[i][j]
+                            x, y = i, j
+        print(f"{x} - {y} : {graph[x][y]}")
+        selected[y] = True
+        edges += 1
+
+# Take input for number of vertices
+n = int(input("Enter number of vertices: "))
+
+# Input adjacency matrix
+print("Enter adjacency matrix (use 0 for no edge):")
+graph = [list(map(int, input().split())) for _ in range(n)]
+
+prims(graph, n)
