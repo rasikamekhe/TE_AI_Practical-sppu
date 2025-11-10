@@ -1,63 +1,70 @@
-# Kruskal's Algorithm - Greedy method for Minimum Spanning Tree
-class Graph:
-    def __init__(self, vertices):
-        self.V = vertices
-        self.graph = []
+# ------------ Kruskal's Algorithm  ------------
 
-    def add_edge(self, u, v, w):
-        self.graph.append([u, v, w])
+# Find operation with Path Compression
+def find(parent, x):
+    # If x is not the root, recursively find the root
+    if parent[x] != x:
+        parent[x] = find(parent, parent[x])   # Path compression
+    return parent[x]
 
-    # Find set of an element
-    def find(self, parent, i):
-        if parent[i] == i:
-            return i
-        return self.find(parent, parent[i])
+# Union operation with Rank
+def union(parent, rank, x, y):
+    rootX = find(parent, x)
+    rootY = find(parent, y)
 
-    # Perform union of two sets
-    def union(self, parent, rank, x, y):
-        xroot = self.find(parent, x)
-        yroot = self.find(parent, y)
-        if rank[xroot] < rank[yroot]:
-            parent[xroot] = yroot
-        elif rank[xroot] > rank[yroot]:
-            parent[yroot] = xroot
-        else:
-            parent[yroot] = xroot
-            rank[xroot] += 1
+    # Attach smaller rank tree under bigger rank tree
+    if rank[rootX] < rank[rootY]:
+        parent[rootX] = rootY
+    elif rank[rootX] > rank[rootY]:
+        parent[rootY] = rootX
+    else:
+        # If ranks are same, make one root and increase its rank
+        parent[rootY] = rootX
+        rank[rootX] += 1
 
-    def kruskal(self):
-        result = []
-        self.graph.sort(key=lambda x: x[2])  # Sort edges by weight
-        parent, rank = [], []
-        for node in range(self.V):
-            parent.append(node)
-            rank.append(0)
+# Kruskal's Algorithm
+def kruskal(edges, V):
+    # Step 1: Sort all edges by weight (ascending)
+    edges.sort(key=lambda x: x[2])
 
-        e = 0  # Count edges in result
-        i = 0  # Index for sorted edges
+    # Step 2: Create parent[] and rank[] for Disjoint Set
+    parent = [i for i in range(V)]   # Initially each vertex is its own parent
+    rank   = [0] * V                 # Rank = 0 for all
 
-        while e < self.V - 1:
-            u, v, w = self.graph[i]
-            i += 1
-            x = self.find(parent, u)
-            y = self.find(parent, v)
-            if x != y:
-                e += 1
-                result.append([u, v, w])
-                self.union(parent, rank, x, y)
+    mst = []     # To store edges of the Minimum Spanning Tree
+    e = 0        # Count edges added to MST (must reach V-1)
 
-        print("\nEdge \tWeight")
-        for u, v, w in result:
-            print(f"{u}-{v} \t{w}")
+    # Step 3: Pick edges one by one from sorted list
+    for u, v, w in edges:
+        if e == V - 1:      # Stop when MST has V-1 edges
+            break
 
-# Take input
+        rootU = find(parent, u)   # Find set of vertex u
+        rootV = find(parent, v)   # Find set of vertex v
+
+        # If roots are different → adding edge won't form cycle
+        if rootU != rootV:
+            mst.append([u, v, w])     # Add edge to MST
+            union(parent, rank, rootU, rootV)   # Merge the sets
+            e += 1
+
+    return mst
+
+# ------------------ INPUT ------------------
 V = int(input("Enter number of vertices: "))
 E = int(input("Enter number of edges: "))
 
-g = Graph(V)
-print("Enter edges as: start end weight")
+edges = []   # Each element = [u, v, w]
+print("Enter edges as: u v weight (0-based indexing):")
+
 for _ in range(E):
     u, v, w = map(int, input().split())
-    g.add_edge(u, v, w)
+    edges.append([u, v, w])
 
-g.kruskal()
+# ------------------ RUN ------------------
+mst = kruskal(edges, V)
+
+print("\nEdges in Minimum Spanning Tree (MST):")
+for u, v, w in mst:
+    print(f"{u} - {v} : {w}")
+
