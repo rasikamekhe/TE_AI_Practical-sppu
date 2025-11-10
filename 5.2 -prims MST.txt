@@ -1,59 +1,28 @@
-# # ---------------- PRIM'S ALGORITHM FOR MST ----------------
-import sys   # for using a very large value: sys.maxsize
+import sys
 
 def prims(graph, n):
-
-    # selected[i] = True → vertex i is already included in MST
-    selected = [False] * n
-
-    # Start MST from vertex 0
+    selected = [False]*n
     selected[0] = True
-
-    edges = 0   # Count how many edges we have added to MST
+    edges = 0
 
     print("\nEdge : Weight")
-
-    # MST must contain (n - 1) edges
-    while edges < n - 1:
-
-        minimum = sys.maxsize   # Set minimum weight to a very large number
-        x = y = 0               # x = selected vertex, y = new vertex to add
-
-        # Loop through ALL vertices
+    while edges < n-1:
+        minimum = sys.maxsize
+        x = y = 0
         for i in range(n):
-
-            # Check only those vertices already in MST
             if selected[i]:
-
-                # Check neighbors of vertex i
                 for j in range(n):
-
-                    # Conditions to pick next edge:
-                    # 1. j is NOT in MST
-                    # 2. weight graph[i][j] is not 0 (means edge exists)
                     if (not selected[j]) and graph[i][j]:
-
-                        # Choose the smallest weight edge
                         if minimum > graph[i][j]:
                             minimum = graph[i][j]
-                            x, y = i, j    # store the edge (i → j)
-
-        # Print chosen edge
+                            x, y = i, j
         print(f"{x} - {y} : {graph[x][y]}")
-
-        # Add new vertex to MST
         selected[y] = True
+        edges += 1
 
-        edges += 1   # One more edge added
-
-# ---------------- INPUT SECTION ----------------
-
-# Number of vertices
 n = int(input("Enter number of vertices: "))
-
-# Read adjacency matrix
-print("Enter adjacency matrix (use 0 for no edge):")
+print("Enter adjacency matrix:")
 graph = [list(map(int, input().split())) for _ in range(n)]
-
-# Run Prim's Algorithm
 prims(graph, n)
+
+
