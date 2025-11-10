@@ -1,8 +1,7 @@
-# Dijkstra's Algorithm - Greedy method for finding shortest path
 import heapq
 
 def dijkstra(graph, start):
-    pq = [(0, start)]  # (distance, node)
+    pq = [(0,start)]
     dist = {node: float('inf') for node in graph}
     dist[start] = 0
 
@@ -18,10 +17,8 @@ def dijkstra(graph, start):
     for node in dist:
         print(f"{start} -> {node} = {dist[node]}")
 
-# Take input for graph
 n = int(input("Enter number of vertices: "))
 graph = {}
-
 for i in range(n):
     node = input(f"Enter vertex name {i+1}: ")
     graph[node] = []
@@ -29,11 +26,11 @@ for i in range(n):
 E = int(input("Enter number of edges: "))
 print("Enter edges as: start end weight")
 for _ in range(E):
-    u, v, w = input().split()
+    u,v,w = input().split()
     w = int(w)
-    graph[u].append((v, w))
-    # Uncomment next line if graph is undirected
-    # graph[v].append((u, w))
+    graph[u].append((v,w))
 
 start = input("Enter start vertex: ")
 dijkstra(graph, start)
+
+
