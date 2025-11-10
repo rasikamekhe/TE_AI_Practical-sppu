@@ -1,73 +1,46 @@
-# ------------------------ Dijkstra's Algorithm ------------------------
-# Purpose: Find the shortest distance from START node to ALL other nodes
-# Works only when all edge weights are NON-NEGATIVE
-# Uses GREEDY approach + PRIORITY QUEUE (heapq)
+def find(parent, x):
+    if parent[x] != x:
+        parent[x] = find(parent, parent[x])
+    return parent[x]
 
-import heapq   # heapq gives us a min-heap (priority queue)
+def union(parent, rank, x, y):
+    rootX = find(parent, x)
+    rootY = find(parent, y)
+    if rank[rootX] < rank[rootY]:
+        parent[rootX] = rootY
+    elif rank[rootX] > rank[rootY]:
+        parent[rootY] = rootX
+    else:
+        parent[rootY] = rootX
+        rank[rootX] += 1
 
-def dijkstra(graph, start):
+def kruskal(edges, V):
+    edges.sort(key=lambda x: x[2])
+    parent = [i for i in range(V)]
+    rank = [0]*V
+    mst = []
+    e = 0
 
-    # Priority queue holds pairs: (distance_from_start, node)
-    pq = [(0, start)]
+    for u,v,w in edges:
+        if e == V-1:
+            break
+        rootU = find(parent, u)
+        rootV = find(parent, v)
+        if rootU != rootV:
+            mst.append([u,v,w])
+            union(parent, rank, rootU, rootV)
+            e += 1
+    return mst
 
-    # dist dictionary: stores BEST (minimum) distance found so far for each node
-    dist = {node: float('inf') for node in graph}  # infinity = very large number
-    dist[start] = 0     # Distance to start node is ALWAYS 0
-
-    # Process until queue becomes empty
-    while pq:
-
-        # Take out the node which is currently closest to start
-        current_dist, current_node = heapq.heappop(pq)
-
-        # Explore all neighbors of the current node
-        for neighbor, weight in graph[current_node]:
-
-            # Calculate new possible distance through this node
-            new_distance = current_dist + weight
-
-            # If new path is shorter, UPDATE it
-            if new_distance < dist[neighbor]:
-                dist[neighbor] = new_distance    # store better distance
-                heapq.heappush(pq, (new_distance, neighbor))  # push updated distance into queue
-
-    # Printing the final shortest distances
-    print("\nShortest distances from source node:")
-    for node in dist:
-        print(f"{start} → {node} = {dist[node]}")
-
-# --------------------------- INPUT SECTION -----------------------------
-
-# Number of vertices in graph
-n = int(input("Enter number of vertices: "))
-
-# Create empty graph dictionary: each vertex will map to its neighbors
-graph = {}
-
-# Take vertex names from user
-for i in range(n):
-    node = input(f"Enter name of vertex {i+1}: ")
-    graph[node] = []       # each vertex starts with empty neighbor list
-
-# Number of edges
+V = int(input("Enter number of vertices: "))
 E = int(input("Enter number of edges: "))
-
-print("Enter edges as: start end weight")
-print("(Example: A B 5 means A → B with weight 5)")
-
-# Read edges
+edges = []
+print("Enter edges as: u v weight")
 for _ in range(E):
-    u, v, w = input().split()
-    w = int(w)
-    graph[u].append((v, w))     # directed edge u -> v with weight w
-    
-    # If the graph is UNDIRECTED, uncomment the next line:
-    # graph[v].append((u, w))
+    u,v,w = map(int, input().split())
+    edges.append([u,v,w])
 
-# Start vertex for shortest path calculation
-start = input("Enter start vertex: ")
-
-# Run Dijkstra
-dijkstra(graph, start)
-
-
+mst = kruskal(edges, V)
+print("\nEdges in MST:")
+for u,v,w in mst:
+    print(u,"-",v,":",w)
